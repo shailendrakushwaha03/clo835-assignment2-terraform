@@ -37,7 +37,12 @@ resource "aws_instance" "ec2" {
   subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_ids
   security_groups             = [aws_security_group.security-group.id]
   associate_public_ip_address = true
-
+  
+  root_block_device {
+    volume_size = 50
+    volume_type = "gp2"
+  }
+  
   tags = {
     Name = "dev-ec2"
   }
@@ -67,8 +72,16 @@ resource "aws_security_group" "security-group" {
 
  ingress {
     description = "Allow HTTP"
-    from_port   = 8081
-    to_port     = 8083
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    description = "Allow HTTP"
+    from_port   = 30000
+    to_port     = 30000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -88,6 +101,6 @@ resource "aws_security_group" "security-group" {
 # Adding SSH key to Amazon EC2
 resource "aws_key_pair" "web_key" {
   key_name   = "key"
-  public_key = file("key.pub") 
+  public_key = file("./key.pub") 
 }
 
