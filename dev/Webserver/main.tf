@@ -37,6 +37,10 @@ resource "aws_instance" "ec2" {
   subnet_id                   = data.terraform_remote_state.network.outputs.public_subnet_ids
   security_groups             = [aws_security_group.security-group.id]
   associate_public_ip_address = true
+  root_block_device {
+    volume_size=50
+    volume_type="gp2"
+  }
   
   root_block_device {
     volume_size = 50
